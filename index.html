@@ -68,6 +68,9 @@ input:focus,select:focus{outline:2px solid var(--acc);border-color:transparent}
 details{border-bottom:1px solid var(--line);padding:18px 0}summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:16px}
 summary::-webkit-details-marker{display:none}summary::after{content:"+";color:var(--acc2);font-size:1.3rem;line-height:1}details[open] summary::after{content:"–"}
 details p{color:var(--mut);margin-top:10px}
+.vsec{display:none}.vsec.on{display:block}.vframe{margin:28px auto 0;max-width:420px;aspect-ratio:9/16;background:#000;border-radius:18px;overflow:hidden;border:1px solid var(--line);box-shadow:0 24px 60px rgba(0,0,0,.5)}
+.vframe video{width:100%;height:100%;display:block;object-fit:cover;background:#000}.vcap{text-align:center;margin-top:18px}.vcap p{color:var(--mut);margin-bottom:14px}
+@media(min-width:768px){.vframe{max-width:960px;aspect-ratio:16/9}}
 footer{padding:36px 0 30px;color:var(--mut);font-size:.88rem}footer b{color:var(--txt)}footer .g{display:grid;gap:16px}
 .mbar{position:fixed;left:0;right:0;bottom:0;z-index:30;display:grid;grid-template-columns:1fr 1.4fr;gap:10px;padding:10px 14px calc(10px + env(safe-area-inset-bottom));background:rgba(11,11,12,.96);border-top:1px solid var(--line)}
 .mbar .btn{padding:12px}
@@ -92,6 +95,14 @@ section{padding:84px 0}.hero{padding:64px 0 80px}.hero .g{grid-template-columns:
 <div class="chips"><span class="chip"><b>●</b>Red, yellow or custom colours</span><span class="chip"><b>●</b>Sold by the carton (e.g. 2&nbsp;L: 30/carton)</span><span class="chip"><b>●</b>Lockable final closure</span><span class="chip"><b>●</b>Delivery across Canada</span></div></div>
 <figure class="photo"><img src="img/hero-sharps-container.jpg" alt="Used needle being dropped into a red 2 L sharps container with a sliding lid" width="785" height="550" fetchpriority="high"></figure></div></section>
 
+
+<!-- Video (prep, unpublished). Expects video/ad-9x16.mp4, video/ad-16x9.mp4, video/poster-9x16.jpg, video/poster-16x9.jpg -->
+<div id="vsentinel" aria-hidden="true"></div>
+<section class="vsec" id="video" aria-label="Product video"><div class="wrap">
+<p class="eb" style="text-align:center">In the studio</p>
+<div class="vframe"><video id="adv" muted playsinline controls preload="none" aria-label="Felix sharps container at a tattoo workstation"></video></div>
+<div class="vcap"><p>See it at the station.</p><a class="btn" href="#quote">Get a quote →</a></div>
+</div></section>
 <!-- 3. What Ontario requires -->
 <section class="alt" id="rules"><div class="wrap"><p class="eb">What Ontario requires</p>
 <h2>The sharps rules for personal service settings, in plain words</h2>
@@ -224,4 +235,31 @@ section{padding:84px 0}.hero{padding:64px 0 80px}.hero .g{grid-template-columns:
 
 <div class="mbar"><a class="btn gh" href="tel:+19057600444">📞 Call</a><a class="btn" href="#quote">Get a quote</a></div>
 <script>document.getElementById('qf').addEventListener('submit',function(e){e.preventDefault();this.style.display='none';document.getElementById('ty').style.display='block'});</script>
+<script>
+(function(){
+  var sec=document.getElementById('video'),v=document.getElementById('adv'),sen=document.getElementById('vsentinel');
+  if(!sec||!v)return;
+  var mob=window.matchMedia('(max-width:767px)').matches;
+  var A={src:'video/ad-9x16.mp4',poster:'video/poster-9x16.jpg'},B={src:'video/ad-16x9.mp4',poster:'video/poster-16x9.jpg'};
+  var list=mob?[A,B]:[B,A],i=0;
+  function tryNext(){
+    if(i>=list.length){sec.classList.remove('on');v.removeAttribute('src');return;}
+    var c=list[i++];
+    v.onloadedmetadata=function(){
+      var vert=v.videoHeight>v.videoWidth; // keep frame matched to the file actually used
+      sec.querySelector('.vframe').style.aspectRatio=v.videoWidth+'/'+v.videoHeight;
+      var f=sec.querySelector('.vframe');if(mob&&!vert)f.style.maxWidth='100%';if(!mob&&vert)f.style.maxWidth='420px';
+      var p=new Image();p.onload=function(){v.poster=c.poster};p.src=c.poster;
+      sec.classList.add('on');
+    };
+    v.onerror=tryNext;
+    v.src=c.src;v.preload='metadata';v.load();
+  }
+  function start(){tryNext()}
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){if(es.some(function(e){return e.isIntersecting})){io.disconnect();start()}},{rootMargin:'400px 0px'});
+    io.observe(sen);
+  }else start();
+})();
+</script>
 </body></html>
