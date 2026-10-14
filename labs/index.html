@@ -364,7 +364,7 @@ document.body.classList.remove('no-js');
   var sec=document.getElementById('video'),v=document.getElementById('adv'),sen=document.getElementById('vsentinel');
   if(!sec||!v)return;
   var mob=window.matchMedia('(max-width:767px)').matches;
-  var A={src:'video/labs/ad-labs-9x16.mp4',poster:'video/labs/poster-labs-9x16.jpg'},B={src:'video/labs/ad-labs-16x9.mp4',poster:'video/labs/poster-labs-16x9.jpg'};
+  var A={src:'../video/labs/ad-labs-9x16.mp4',poster:'../video/labs/poster-labs-9x16.jpg'},B={src:'../video/labs/ad-labs-16x9.mp4',poster:'../video/labs/poster-labs-16x9.jpg'};
   var list=mob?[A,B]:[B,A],i=0;
   function tryNext(){
     if(i>=list.length){sec.classList.remove('on');v.removeAttribute('src');return;}
